@@ -371,6 +371,28 @@ canvas { width: 100% !important; }
    ローディング & ユーティリティ
 ============================================================ */
 .loading { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+
+/* ログインローディングオーバーレイ */
+.login-loading-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(26,26,46,0.85);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.login-loading-overlay.show { display: flex; }
+.spinner {
+  width: 44px; height: 44px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: #fff; font-size: 14px; opacity: 0.8; }
 .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 .empty-text { font-size: 14px; }
@@ -381,6 +403,12 @@ canvas { width: 100% !important; }
 </style>
 </head>
 <body>
+
+<!-- ローディングオーバーレイ -->
+<div id="login-loading" class="login-loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">接続中...</div>
+</div>
 
 <!-- ============================================================
   ログインページ
@@ -790,8 +818,10 @@ async function doLogin() {
   const pass = document.getElementById('login-pass').value.trim();
   if (!id || !pass) { document.getElementById('login-error').textContent = 'IDとパスワードを入力してください'; return; }
 
-  document.getElementById('login-error').textContent = '認証中...';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('login-loading').classList.add('show');
   const res = await api('login', { id, password: pass });
+  document.getElementById('login-loading').classList.remove('show');
   if (!res.ok) { document.getElementById('login-error').textContent = res.error; return; }
 
   state.token = res.token;
