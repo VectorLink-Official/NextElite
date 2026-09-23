@@ -402,7 +402,7 @@ canvas { width: 100% !important; }
       </div>
       <button class="btn-primary" onclick="doLogin()">ログイン</button>
       <div id="login-error" class="error-msg"></div>
-      <div class="login-hint">IDとパスワードは原島から受け取ってください</div>
+      <div class="login-hint">IDとパスワードはコーチから受け取ってください</div>
     </div>
   </div>
 </div>
@@ -731,7 +731,7 @@ canvas { width: 100% !important; }
 // ============================================================
 //  設定
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzMMxjrYJlRRnS74kkbksYvj0Jn9L8fAkSaRmxzT7TGtKdqXRnZs0qoPq_rGsIyE1UUaQ/exec'; // ← デプロイ後にここを書き換える
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbznWdrXSVlHg0ZznkymiXIQ7QqUTNSbGuICbG2UamhTAHbVVIgwBRVxKmaFpswZ7Ay41w/exec'; // ← デプロイ後にここを書き換える
 
 // ============================================================
 //  状態管理
@@ -1236,7 +1236,7 @@ function switchClientTab(tab) {
     showPage('page-client-metrics');
     loadClientMetrics();
   } else if (tab === 'messages') {
-    openMsgWith('coach_harashima', '原島', state.role === 'coach' ? 'page-coach-home' : 'page-client-home');
+    openMsgWith('coach_harajima', '原島コーチ', state.role === 'coach' ? 'page-coach-home' : 'page-client-home');
   }
 }
 
