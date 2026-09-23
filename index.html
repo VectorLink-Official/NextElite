@@ -786,12 +786,14 @@ let state = {
 //  API
 // ============================================================
 async function api(action, body = {}) {
-  const params = new URLSearchParams({ action, token: state.token || '' });
+  // GETパラメータにすべて乗せる（CORSでPOSTボディが届かない問題の対策）
+  const params = new URLSearchParams({ action, token: state.token || '', ...body });
+  // menu_tagsなど配列は別途処理
+  if (body.menu_tags && Array.isArray(body.menu_tags)) {
+    params.set('menu_tags', body.menu_tags.join(','));
+  }
   try {
-    const res = await fetch(`${GAS_URL}?${params}`, {
-      method: 'POST',
-      body: JSON.stringify({ ...body, action, token: state.token }),
-    });
+    const res = await fetch(`${GAS_URL}?${params}`);
     return await res.json();
   } catch (e) {
     return { ok: false, error: 'ネットワークエラー' };
