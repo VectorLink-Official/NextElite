@@ -45,8 +45,9 @@ body {
 /* ============================================================
    ページ管理
 ============================================================ */
-.page { display: none; min-height: 100vh; }
-.page.active { display: block; }
+.page { display: none; min-height: 100vh; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; background: var(--surface-1); }
+.page.active { display: block; z-index: 1; }
+#page-login { background: var(--navy); z-index: 2; }
 
 /* ============================================================
    ログイン
@@ -731,7 +732,7 @@ canvas { width: 100% !important; }
 // ============================================================
 //  設定
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzLm1Tm3901dvv2QqaeTNI_MAl5VKM0Ak1PWjNj6RNmOEpdIkZXOOkBolzxGtYv9J1_ng/exec'; // ← デプロイ後にここを書き換える
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxMfgEVIKmtoilppcD8WqlDIx6qwAKjdPC2wr5rZqOtRqEw5vfV8RDsQ8VnFnuo_KYuVQ/exec'; // ← デプロイ後にここを書き換える
 
 // ============================================================
 //  状態管理
@@ -1236,7 +1237,7 @@ function switchClientTab(tab) {
     showPage('page-client-metrics');
     loadClientMetrics();
   } else if (tab === 'messages') {
-    openMsgWith('coach_harajima', '原島コーチ', state.role === 'coach' ? 'page-coach-home' : 'page-client-home');
+    openMsgWith('1', '原島コーチ', state.role === 'coach' ? 'page-coach-home' : 'page-client-home');
   }
 }
 
