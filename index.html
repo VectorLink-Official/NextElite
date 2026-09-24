@@ -760,7 +760,7 @@ canvas { width: 100% !important; }
 // ============================================================
 //  設定
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxWp23xzr7a5M6mfVsJCKQFwBngji-Gs8U7wNCghLmP8AsBPjnyLMA7o9tRf736aSB20w/exec'; // ← デプロイ後にここを書き換える
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0DxY2mwt2EC2fg9HoLPwFdteC9ccxmNGBhXCT8mT7wf4W6LU2DjOcBf_O7xTvTdz6Og/exec'; // ← デプロイ後にここを書き換える
 
 // ============================================================
 //  状態管理
@@ -790,16 +790,23 @@ async function api(action, body = {}) {
   if (body.menu_tags && Array.isArray(body.menu_tags)) {
     params.set('menu_tags', body.menu_tags.join(','));
   }
-  try {
-    const res = await fetch(`${GAS_URL}?${params}`, {
-      redirect: 'follow',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch (e) {
-    return { ok: false, error: 'ネットワークエラー' };
-  }
+  return new Promise((resolve) => {
+    const cbName = 'cb_' + Date.now();
+    params.set('callback', cbName);
+    const script = document.createElement('script');
+    script.src = `${GAS_URL}?${params}`;
+    script.onerror = () => {
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve({ ok: false, error: 'ネットワークエラー' });
+    };
+    window[cbName] = (data) => {
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    document.body.appendChild(script);
+  });
 }
 
 // ============================================================
