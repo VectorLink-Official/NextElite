@@ -790,43 +790,30 @@ async function api(action, body = {}) {
   if (body.menu_tags && Array.isArray(body.menu_tags)) {
     params.set('menu_tags', body.menu_tags.join(','));
   }
-  try {
-    // no-corsで302のlocationを取得してリダイレクト先に直接アクセス
-    const url = `${GAS_URL}?${params}`;
-    const res = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow',
-      mode: 'cors',
-    });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch (e) {
-    // フォールバック：scriptタグ経由のJSONP
-    return new Promise((resolve) => {
-      const cbName = 'cb_' + Date.now();
-      params.set('callback', cbName);
-      const script = document.createElement('script');
-      script.src = `${GAS_URL}?${params}`;
-      const timer = setTimeout(() => {
-        delete window[cbName];
-        if (document.body.contains(script)) document.body.removeChild(script);
-        resolve({ ok: false, error: 'タイムアウト' });
-      }, 15000);
-      script.onerror = () => {
-        clearTimeout(timer);
-        delete window[cbName];
-        if (document.body.contains(script)) document.body.removeChild(script);
-        resolve({ ok: false, error: 'ネットワークエラー' });
-      };
-      window[cbName] = (data) => {
-        clearTimeout(timer);
-        delete window[cbName];
-        if (document.body.contains(script)) document.body.removeChild(script);
-        resolve(data);
-      };
-      document.body.appendChild(script);
-    });
-  }
+  return new Promise((resolve) => {
+    const cbName = 'cb_' + Date.now();
+    params.set('callback', cbName);
+    const script = document.createElement('script');
+    script.src = `${GAS_URL}?${params}`;
+    const timer = setTimeout(() => {
+      delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      resolve({ ok: false, error: 'タイムアウト' });
+    }, 20000);
+    script.onerror = () => {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      resolve({ ok: false, error: 'ネットワークエラー' });
+    };
+    window[cbName] = (data) => {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      resolve(data);
+    };
+    document.body.appendChild(script);
+  });
 }
 
 // ============================================================
