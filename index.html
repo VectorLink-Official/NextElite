@@ -292,12 +292,17 @@ let S = {
 // Prospect Forgeと同じfetchパターン
 async function api(action, data = {}) {
   try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      mode: 'cors',
+    const params = new URLSearchParams();
+    params.set('action', action);
+    params.set('token', S.token || '');
+    Object.keys(data).forEach(k => {
+      const v = data[k];
+      params.set(k, Array.isArray(v) ? v.join(',') : String(v == null ? '' : v));
+    });
+    const res = await fetch(GAS_URL + '?' + params.toString(), {
+      method: 'GET',
       redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action, token: S.token || '', ...data })
+      mode: 'cors',
     });
     const text = await res.text();
     try { return JSON.parse(text); }
